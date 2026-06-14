@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/deepseek_service.dart';
 import '../services/file_system_service.dart';
 
@@ -23,11 +24,20 @@ class _AgentScreenState extends State<AgentScreen> {
   @override
   void initState() {
     super.initState();
+    _loadToken();
     _messages.add(_Message(
       'Hi, I\'m Pau Agent. I can help you code from your phone.\n\n'
       'Try: "show me the files in this project" or "edit the home screen"',
       isUser: false,
     ));
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('deepseek_token') ?? '';
+    if (token.isNotEmpty) {
+      _service.setToken(token);
+    }
   }
 
   @override
